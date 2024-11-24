@@ -6,11 +6,11 @@ namespace Quiz.Models
     {
         public string Name { get; set; } 
         public int BestScore { get; set; }  
-        public List<Quiz> QuizzesCreated { get; set; } 
+        public List<Quize> QuizzesCreated { get; set; } 
 
         public Player()
         {
-            QuizzesCreated = new List<Quiz>(); 
+            QuizzesCreated = new List<Quize>(); 
         }
     }
     //public class AccountEquilityComparer : IEqualityComparer<Quiz>

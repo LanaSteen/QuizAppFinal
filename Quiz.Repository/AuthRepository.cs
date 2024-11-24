@@ -18,6 +18,56 @@ namespace Quiz.Repository
             _filePath = Path.Combine(dataFolder, FileName);
         }
 
+        //public void SaveAuthUser(AuthUser user, string password)
+        //{
+        //    var users = LoadAuthUsers();
+
+        //    var existingUser = users.FirstOrDefault(u => u.Username == user.Username);
+
+        //    if (existingUser != null)
+        //    {
+        //        if (existingUser.PasswordHash == password)
+        //        {
+        //            existingUser.LastLogin = DateTime.Now;
+        //            existingUser.ActiveNow = true;
+        //        }
+        //        else
+        //        {
+        //            return;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (users.Any())
+        //        {
+        //            var lastUser = users.OrderByDescending(u => u.UserId).FirstOrDefault();
+        //            user.UserId = lastUser != null ? lastUser.UserId + 1 : 1;
+        //        }
+        //        else
+        //        {
+        //            user.UserId = 1;
+        //        }
+
+        //        user.ActiveNow = true;
+        //        user.LastLogin = DateTime.Now;
+        //        users.Add(user);
+        //    }
+
+        //    foreach (var u in users)
+        //    {
+        //        if (u.UserId != user.UserId)
+        //        {
+        //            u.ActiveNow = false;
+        //        }
+        //    }
+
+        //    using (var fileStream = new FileStream(_filePath, FileMode.Create, FileAccess.Write))
+        //    using (var writer = new StreamWriter(fileStream, Encoding.UTF8))
+        //    {
+        //        var json = JsonSerializer.Serialize(users, new JsonSerializerOptions { WriteIndented = true });
+        //        writer.Write(json);
+        //    }
+        //}
         public void SaveAuthUser(AuthUser user, string password)
         {
             var users = LoadAuthUsers();
@@ -29,7 +79,7 @@ namespace Quiz.Repository
                 if (existingUser.PasswordHash == password)
                 {
                     existingUser.LastLogin = DateTime.Now;
-                    existingUser.ActiveNow = true;
+                    existingUser.ActiveNow = true; 
                 }
                 else
                 {
@@ -38,6 +88,7 @@ namespace Quiz.Repository
             }
             else
             {
+          
                 if (users.Any())
                 {
                     var lastUser = users.OrderByDescending(u => u.UserId).FirstOrDefault();
@@ -53,14 +104,16 @@ namespace Quiz.Repository
                 users.Add(user);
             }
 
+  
             foreach (var u in users)
             {
                 if (u.UserId != user.UserId)
                 {
-                    u.ActiveNow = false;
+                    u.ActiveNow = false; 
                 }
             }
 
+          
             using (var fileStream = new FileStream(_filePath, FileMode.Create, FileAccess.Write))
             using (var writer = new StreamWriter(fileStream, Encoding.UTF8))
             {
@@ -68,7 +121,6 @@ namespace Quiz.Repository
                 writer.Write(json);
             }
         }
-
         public List<AuthUser> LoadAuthUsers()
         {
             if (!File.Exists(_filePath))

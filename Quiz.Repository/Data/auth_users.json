@@ -1,51 +1,9 @@
 ﻿[
   {
-    "UserId": 0,
-    "Username": "user1",
-    "PasswordHash": "pass",
-    "ActiveNow": false,
-    "LastLogin": "2024-11-21T22:16:36.6952081+04:00"
-  },
-  {
-    "UserId": 1,
-    "Username": "ff",
-    "PasswordHash": "ff",
-    "ActiveNow": false,
-    "LastLogin": "2024-11-21T23:16:34.4726431+04:00"
-  },
-  {
-    "UserId": 2,
-    "Username": "gg",
-    "PasswordHash": "gg",
+    "UserId": 7,
+    "Username": "kk",
+    "PasswordHash": "rTcO2ZsYmSHn/iYFfECqufT\u002B6DheR2BvUPNIuaVTCvA=",
     "ActiveNow": true,
-    "LastLogin": "2024-11-21T23:16:40.1131717+04:00"
-  },
-  {
-    "UserId": 3,
-    "Username": "tt",
-    "PasswordHash": "tt",
-    "ActiveNow": false,
-    "LastLogin": "2024-11-21T22:48:18.7081362+04:00"
-  },
-  {
-    "UserId": 4,
-    "Username": "rr",
-    "PasswordHash": "rr",
-    "ActiveNow": false,
-    "LastLogin": "2024-11-21T23:09:46.5366158+04:00"
-  },
-  {
-    "UserId": 5,
-    "Username": "ff",
-    "PasswordHash": "rr",
-    "ActiveNow": false,
-    "LastLogin": "2024-11-21T23:09:58.9605658+04:00"
-  },
-  {
-    "UserId": 6,
-    "Username": "uu",
-    "PasswordHash": "uu",
-    "ActiveNow": false,
-    "LastLogin": "2024-11-21T23:14:15.2757109+04:00"
+    "LastLogin": "2024-11-25T00:13:46.6524455+04:00"
   }
 ]
