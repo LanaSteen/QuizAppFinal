@@ -7,6 +7,7 @@ internal class Program
     static QuizRepository quizRepo = new QuizRepository(dataFolder);
     static QuestionRepository questionRepo = new QuestionRepository(dataFolder);
     static AnswerRepository answerRepo = new AnswerRepository(dataFolder);
+    static PlayerRepository playerRepo = new PlayerRepository(dataFolder); 
 
     static void Main(string[] args)
     {
@@ -43,6 +44,20 @@ internal class Program
         {
             Console.WriteLine($"{loginUser.Username} - Nice to see you in our game!");
             authRepo.SaveAuthUser(loginUser, PasswordHelper.HashPassword(password));
+            existingUser = authRepo.GetAuthUserByUsername(username);  
+
+        }
+
+        var player = playerRepo.LoadPlayers().FirstOrDefault(p => p.UserId == existingUser.UserId);
+        if (player == null)
+        {
+            player = new Player
+            {
+                UserId = existingUser.UserId,
+                Name = existingUser.Username,
+                BestScore = 0
+            };
+            playerRepo.AddOrUpdatePlayer(player);
         }
 
         Console.WriteLine("Do you want to play an existing quiz (1), create your own quiz (0), delete a quiz (2), or update a quiz (3)?");
@@ -54,8 +69,7 @@ internal class Program
         }
         else if (choice == 1)
         {
-            // Logic to play an existing quiz
-            //PlayQuiz(existingUser);
+            PlayQuiz(player);
         }
         else if (choice == 2)
         {
@@ -87,20 +101,20 @@ internal class Program
             {
                 Console.WriteLine("This quiz name already exists. Please choose a different name.");
             }
-        } while (!isQuizNameUnique);  
+        } while (!isQuizNameUnique);
 
         var newQuiz = new Quize
         {
             QuizId = quizRepo.LoadQuizzes().Any() ? quizRepo.LoadQuizzes().Max(q => q.QuizId) + 1 : 0,
             Name = quizName,
             UserId = logedinUser.UserId,
-            Questions = new List<Question>()
+            QuestionIds = new List<int>()
         };
 
         for (int i = 0; i < 2; i++)  
         {
-            var newQuestion = CreateQuestion(newQuiz.QuizId); 
-            newQuiz.Questions.Add(newQuestion);
+            var newQuestion = CreateQuestion(newQuiz.QuizId);
+            newQuiz.QuestionIds.Add(newQuestion.QuestionId);
         }
 
         quizRepo.SaveQuiz(newQuiz);
@@ -130,11 +144,10 @@ internal class Program
 
         if (quizToDelete != null)
         {
-        
-            var questionsToDelete = questionRepo.LoadQuestions().Where(q => q.QuizId == quizToDelete.QuizId).ToList();
+            var questionsToDelete = questionRepo.LoadQuestions().Where(q => quizToDelete.QuestionIds.Contains(q.QuestionId)).ToList();
             foreach (var question in questionsToDelete)
             {
-                var answersToDelete = answerRepo.LoadAnswers().Where(a => a.QuestionId == question.QuestionId).ToList();
+                var answersToDelete = answerRepo.LoadAnswers().Where(a => question.AnswerIds.Contains(a.AnswerId)).ToList();
                 foreach (var answer in answersToDelete)
                 {
                     answerRepo.DeleteAnswer(answer.AnswerId);  
@@ -142,7 +155,7 @@ internal class Program
                 questionRepo.DeleteQuestion(question.QuestionId);  
             }
 
-            quizRepo.DeleteQuiz(quizIdToDelete); 
+            quizRepo.DeleteQuiz(quizIdToDelete);  
             Console.WriteLine("Quiz deleted successfully!");
         }
         else
@@ -174,43 +187,33 @@ internal class Program
 
         if (quizToUpdate != null)
         {
-            Console.WriteLine("Your questions in this quiz:");
-            foreach (var question in quizToUpdate.Questions)
+
+            DeleteQuizAndAssociatedData(quizToUpdate.QuizId);
+
+       
+            Console.WriteLine("Enter the new quiz name (or press enter to keep the current name):");
+            string newQuizName = Console.ReadLine();
+            if (!string.IsNullOrEmpty(newQuizName))
             {
-                Console.WriteLine($"QuestionId: {question.QuestionId}, Text: {question.QuestionText}");
+                quizToUpdate.Name = newQuizName;
             }
 
-            Console.WriteLine("Enter the QuestionId of the question you want to update:");
-            int questionIdToUpdate = Convert.ToInt32(Console.ReadLine());
-
-            var questionToUpdate = quizToUpdate.Questions.FirstOrDefault(q => q.QuestionId == questionIdToUpdate);
-            if (questionToUpdate != null)
+           
+            var newQuiz = new Quize
             {
-                Console.WriteLine("Enter the new question text:");
-                questionToUpdate.QuestionText = Console.ReadLine();
-                questionRepo.SaveQuestion(questionToUpdate);  
+                QuizId = quizRepo.LoadQuizzes().Any() ? quizRepo.LoadQuizzes().Max(q => q.QuizId) + 1 : 0,
+                Name = quizToUpdate.Name,
+                UserId = logedinUser.UserId,
+                QuestionIds = new List<int>()
+            };
+
+            for (int i = 0; i < quizToUpdate.QuestionIds.Count; i++)
+            {
+                var newQuestion = CreateQuestion(newQuiz.QuizId); 
+                newQuiz.QuestionIds.Add(newQuestion.QuestionId);
             }
 
-            Console.WriteLine("Your answers for this question:");
-            foreach (var answer in questionToUpdate.Answers)
-            {
-                Console.WriteLine($"AnswerId: {answer.AnswerId}, Text: {answer.AnswerText}, Correct: {answer.IsCorrect}");
-            }
-
-            Console.WriteLine("Enter the AnswerId of the answer you want to update:");
-            int answerIdToUpdate = Convert.ToInt32(Console.ReadLine());
-
-            var answerToUpdate = questionToUpdate.Answers.FirstOrDefault(a => a.AnswerId == answerIdToUpdate);
-            if (answerToUpdate != null)
-            {
-                Console.WriteLine("Enter the new answer text:");
-                answerToUpdate.AnswerText = Console.ReadLine();
-                answerToUpdate.IsCorrect = GetTrueFalseInput("Is this the correct answer? (y/n): ");
-
-                answerRepo.SaveAnswer(answerToUpdate);  
-            }
-
-            quizRepo.SaveQuiz(quizToUpdate); 
+            quizRepo.SaveQuiz(newQuiz);  
             Console.WriteLine("Quiz updated successfully!");
         }
         else
@@ -219,6 +222,31 @@ internal class Program
         }
     }
 
+    static void DeleteQuizAndAssociatedData(int quizId)
+    {
+       
+        var quizToDelete = quizRepo.LoadQuizzes().FirstOrDefault(q => q.QuizId == quizId);
+
+        if (quizToDelete != null)
+        {
+            
+            var questionsToDelete = questionRepo.LoadQuestions().Where(q => quizToDelete.QuestionIds.Contains(q.QuestionId)).ToList();
+            foreach (var question in questionsToDelete)
+            {
+               
+                var answersToDelete = answerRepo.LoadAnswers().Where(a => question.AnswerIds.Contains(a.AnswerId)).ToList();
+                foreach (var answer in answersToDelete)
+                {
+                    answerRepo.DeleteAnswer(answer.AnswerId);
+                }
+                questionRepo.DeleteQuestion(question.QuestionId); 
+            }
+
+         
+            quizRepo.DeleteQuiz(quizId);  
+            Console.WriteLine("Old quiz and associated data deleted successfully.");
+        }
+    }
     static Question CreateQuestion(int quizId)
     {
         Console.WriteLine("Enter the question text:");
@@ -226,33 +254,34 @@ internal class Program
 
         var newQuestion = new Question
         {
-            QuizId = quizId,  
             QuestionText = questionText,
-            Answers = new List<Answer>()
+            AnswerIds = new List<int>()  
         };
 
-        bool correctAnswerAssigned = false;  
+        bool correctAnswerAssigned = false;
 
-        for (int i = 0; i < 4; i++) 
+        for (int i = 0; i < 4; i++)  
         {
-            var newAnswer = CreateAnswer(newQuestion.QuestionId, ref correctAnswerAssigned); 
+            var newAnswer = CreateAnswer(ref correctAnswerAssigned);  
 
-            if (newAnswer != null) 
+            if (newAnswer != null)
             {
-                newQuestion.Answers.Add(newAnswer);
+                newQuestion.AnswerIds.Add(newAnswer.AnswerId);  
             }
             else
             {
                 Console.WriteLine("Skipping this answer due to validation failure.");
-                i--; 
+                i--;  
             }
         }
 
-        questionRepo.SaveQuestion(newQuestion);
+        questionRepo.SaveQuestion(newQuestion);  
+        quizRepo.AddQuestionToQuiz(quizId, newQuestion.QuestionId);  
+
         return newQuestion;
     }
 
-    static Answer CreateAnswer(int questionId, ref bool correctAnswerAssigned)
+    static Answer CreateAnswer(ref bool correctAnswerAssigned)
     {
         Console.WriteLine("Enter the answer text:");
         string answerText = Console.ReadLine();
@@ -267,20 +296,17 @@ internal class Program
 
         if (isCorrect)
         {
-            correctAnswerAssigned = true;  
+            correctAnswerAssigned = true; 
         }
 
         int answerId = answerRepo.LoadAnswers().Any() ? answerRepo.LoadAnswers().Max(a => a.AnswerId) + 1 : 1;
 
-       
-        var newAnswer = new Answer(questionId, answerText, isCorrect)
-        {
-            AnswerId = answerId  
-        };
+        var newAnswer = new Answer(answerId, answerText, isCorrect);
 
-        answerRepo.SaveAnswer(newAnswer); 
+        answerRepo.SaveAnswer(newAnswer);  
         return newAnswer;
     }
+
     static bool GetTrueFalseInput(string prompt)
     {
         string userInput;
@@ -297,4 +323,66 @@ internal class Program
                 Console.WriteLine("Invalid input. Please enter 'y' or 'n'.");
         } while (true);
     }
+
+
+    static void PlayQuiz(Player player)
+    {
+        var availableQuizzes = quizRepo.LoadQuizzes().Where(q => q.UserId != player.UserId).ToList();  
+        if (availableQuizzes.Count == 0)
+        {
+            Console.WriteLine("There are no available quizzes to play.");
+            return;
+        }
+
+        Console.WriteLine("Select a quiz to play:");
+        for (int i = 0; i < availableQuizzes.Count; i++)
+        {
+            Console.WriteLine($"{i + 1}. {availableQuizzes[i].Name}");
+        }
+        int selectedQuizIndex = Convert.ToInt32(Console.ReadLine()) - 1;
+
+        var selectedQuiz = availableQuizzes[selectedQuizIndex];
+        var questions = questionRepo.LoadQuestions().Where(q => selectedQuiz.QuestionIds.Contains(q.QuestionId)).ToList();
+
+        int score = 0;
+        var startTime = DateTime.Now;
+        TimeSpan timeLimit = TimeSpan.FromMinutes(2);
+
+        foreach (var question in questions)
+        {
+            Console.WriteLine(question.QuestionText);
+            var answers = answerRepo.LoadAnswers().Where(a => question.AnswerIds.Contains(a.AnswerId)).ToList();
+
+            foreach (var answer in answers)
+            {
+                Console.WriteLine($"{answer.AnswerId}. {answer.AnswerText}");
+            }
+
+            Console.WriteLine("Enter the number of your answer:");
+            int userAnswer = Convert.ToInt32(Console.ReadLine());
+
+            var selectedAnswer = answers.FirstOrDefault(a => a.AnswerId == userAnswer);
+
+            if (selectedAnswer != null && selectedAnswer.IsCorrect)
+            {
+                score += 20;
+            }
+
+            if (DateTime.Now - startTime > timeLimit)
+            {
+                Console.WriteLine("Time is up! You did not complete the quiz in time.");
+                break;
+            }
+        }
+
+     
+        player.BestScore =player.BestScore + score;
+        playerRepo.AddOrUpdatePlayer(player);  
+
+        Console.WriteLine($"Your score: {score}.");
+        Console.WriteLine($"Your total score: {player.BestScore}.");
+    }
+
+    
+
 }

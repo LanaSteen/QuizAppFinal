@@ -18,26 +18,21 @@ namespace Quiz.Repository
             _answerFilePath = Path.Combine(dataFolder, "answer.json");
         }
 
-
         public void SaveQuiz(Quize quiz)
         {
-            var quizzes = LoadQuizzes(); 
-
+            var quizzes = LoadQuizzes();
 
             quiz.QuizId = quizzes.Any() ? quizzes.Max(q => q.QuizId) + 1 : 0;
-
             quizzes.Add(quiz);
 
-      
             SaveToFile(quizzes);
         }
-
 
         public List<Quize> LoadQuizzes()
         {
             if (!File.Exists(_filePath))
             {
-                return new List<Quize>();  
+                return new List<Quize>();
             }
 
             using (var fileStream = new FileStream(_filePath, FileMode.Open, FileAccess.Read))
@@ -51,12 +46,11 @@ namespace Quiz.Repository
                 catch (JsonException ex)
                 {
                     Console.WriteLine($"Error deserializing quizzes: {ex.Message}");
-                    return new List<Quize>();  
+                    return new List<Quize>();
                 }
             }
         }
 
- 
         private void SaveToFile<T>(T data)
         {
             using (var fileStream = new FileStream(_filePath, FileMode.Create, FileAccess.Write))
@@ -67,7 +61,6 @@ namespace Quiz.Repository
             }
         }
 
-
         public void DeleteQuiz(int quizId)
         {
             var quizzes = LoadQuizzes();
@@ -75,25 +68,27 @@ namespace Quiz.Repository
 
             if (quizToDelete != null)
             {
-        
                 var questionRepo = new QuestionRepository(_questionFilePath);
                 var answerRepo = new AnswerRepository(_answerFilePath);
 
-
-                foreach (var question in quizToDelete.Questions)
+                foreach (var questionId in quizToDelete.QuestionIds)
                 {
-                    var answersToDelete = answerRepo.LoadAnswers().Where(a => a.QuestionId == question.QuestionId).ToList();
-                    foreach (var answer in answersToDelete)
+                    var question = questionRepo.LoadQuestions().FirstOrDefault(q => q.QuestionId == questionId);
+                    if (question != null)
                     {
-                        answerRepo.DeleteAnswer(answer.AnswerId);  
+                        foreach (var answerId in question.AnswerIds)
+                        {
+                            var answer = answerRepo.LoadAnswers().FirstOrDefault(a => a.AnswerId == answerId);
+                            if (answer != null)
+                            {
+                                answerRepo.DeleteAnswer(answer.AnswerId);
+                            }
+                        }
+                        questionRepo.DeleteQuestion(question.QuestionId);
                     }
-                    questionRepo.DeleteQuestion(question.QuestionId);  
                 }
 
-          
                 quizzes.Remove(quizToDelete);
-
-             
                 SaveToFile(quizzes);
 
                 Console.WriteLine("Quiz and its associated questions and answers deleted successfully!");
@@ -103,119 +98,16 @@ namespace Quiz.Repository
                 Console.WriteLine("Quiz not found.");
             }
         }
-
-
-        public void DeleteQuestion(int questionId)
+        public void AddQuestionToQuiz(int quizId, int questionId)
         {
-            var questions = LoadQuestions();
-            var questionToDelete = questions.FirstOrDefault(q => q.QuestionId == questionId);
+            var quiz = LoadQuizzes().FirstOrDefault(q => q.QuizId == quizId);
 
-            if (questionToDelete != null)
+            if (quiz != null)
             {
-          
-                questions.Remove(questionToDelete);
-
-           
-                SaveQuestions(questions);
-
-                Console.WriteLine("Question deleted successfully!");
-            }
-            else
-            {
-                Console.WriteLine("Question not found.");
-            }
-        }
-
-
-        public void DeleteAnswer(int answerId)
-        {
-            var answers = LoadAnswers();
-            var answerToDelete = answers.FirstOrDefault(a => a.AnswerId == answerId);
-
-            if (answerToDelete != null)
-            {
-              
-                answers.Remove(answerToDelete);
-
-              
-                SaveAnswers(answers);
-
-                Console.WriteLine("Answer deleted successfully!");
-            }
-            else
-            {
-                Console.WriteLine("Answer not found.");
-            }
-        }
-
-
-        private List<Question> LoadQuestions()
-        {
-            if (!File.Exists(_questionFilePath))
-            {
-                return new List<Question>(); 
-            }
-
-            using (var fileStream = new FileStream(_questionFilePath, FileMode.Open, FileAccess.Read))
-            using (var reader = new StreamReader(fileStream, Encoding.UTF8))
-            {
-                var jsonData = reader.ReadToEnd();
-                try
-                {
-                    return JsonSerializer.Deserialize<List<Question>>(jsonData) ?? new List<Question>();
-                }
-                catch (JsonException ex)
-                {
-                    Console.WriteLine($"Error deserializing questions: {ex.Message}");
-                    return new List<Question>();  
-                }
-            }
-        }
-
-
-        private void SaveQuestions(List<Question> questions)
-        {
-            using (var fileStream = new FileStream(_questionFilePath, FileMode.Create, FileAccess.Write))
-            using (var writer = new StreamWriter(fileStream, Encoding.UTF8))
-            {
-                var json = JsonSerializer.Serialize(questions, new JsonSerializerOptions { WriteIndented = true });
-                writer.Write(json);
-            }
-        }
-
-    
-        private List<Answer> LoadAnswers()
-        {
-            if (!File.Exists(_answerFilePath))
-            {
-                return new List<Answer>(); 
-            }
-
-            using (var fileStream = new FileStream(_answerFilePath, FileMode.Open, FileAccess.Read))
-            using (var reader = new StreamReader(fileStream, Encoding.UTF8))
-            {
-                var jsonData = reader.ReadToEnd();
-                try
-                {
-                    return JsonSerializer.Deserialize<List<Answer>>(jsonData) ?? new List<Answer>();
-                }
-                catch (JsonException ex)
-                {
-                    Console.WriteLine($"Error deserializing answers: {ex.Message}");
-                    return new List<Answer>();  
-                }
-            }
-        }
-
-
-        private void SaveAnswers(List<Answer> answers)
-        {
-            using (var fileStream = new FileStream(_answerFilePath, FileMode.Create, FileAccess.Write))
-            using (var writer = new StreamWriter(fileStream, Encoding.UTF8))
-            {
-                var json = JsonSerializer.Serialize(answers, new JsonSerializerOptions { WriteIndented = true });
-                writer.Write(json);
+                quiz.QuestionIds.Add(questionId);  // Add the QuestionId to the Quiz's list of QuestionIds
+                SaveQuiz(quiz);  // Save the updated quiz
             }
         }
     }
+
 }

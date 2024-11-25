@@ -1,0 +1,22 @@
+[
+  {
+    "Name": "fff",
+    "BestScore": 140,
+    "QuizzesCreated": [],
+    "UserId": 8,
+    "Username": null,
+    "PasswordHash": null,
+    "ActiveNow": false,
+    "LastLogin": "0001-01-01T00:00:00"
+  },
+  {
+    "Name": "kk",
+    "BestScore": 0,
+    "QuizzesCreated": [],
+    "UserId": 7,
+    "Username": null,
+    "PasswordHash": null,
+    "ActiveNow": false,
+    "LastLogin": "0001-01-01T00:00:00"
+  }
+]

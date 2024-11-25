@@ -17,26 +17,21 @@ namespace Quiz.Repository
             _filePath = Path.Combine(dataFolder, "questions.json");
         }
 
-
         public void SaveQuestion(Question question)
         {
-            var questions = LoadQuestions(); 
+            var questions = LoadQuestions();
 
-    
             question.QuestionId = questions.Any() ? questions.Max(q => q.QuestionId) + 1 : 0;
 
             questions.Add(question);
-
-    
             SaveToFile(questions);
         }
 
-    
         public List<Question> LoadQuestions()
         {
             if (!File.Exists(_filePath))
             {
-                return new List<Question>();  
+                return new List<Question>();
             }
 
             using (var fileStream = new FileStream(_filePath, FileMode.Open, FileAccess.Read))
@@ -50,11 +45,10 @@ namespace Quiz.Repository
                 catch (JsonException ex)
                 {
                     Console.WriteLine($"Error deserializing questions: {ex.Message}");
-                    return new List<Question>();  
+                    return new List<Question>();
                 }
             }
         }
-
 
         public void DeleteQuestion(int questionId)
         {
@@ -63,10 +57,7 @@ namespace Quiz.Repository
 
             if (questionToDelete != null)
             {
-
                 questions.Remove(questionToDelete);
-
-                
                 SaveToFile(questions);
 
                 Console.WriteLine($"Question with ID {questionId} deleted successfully.");
@@ -77,7 +68,6 @@ namespace Quiz.Repository
             }
         }
 
-      
         private void SaveToFile<T>(T data)
         {
             using (var fileStream = new FileStream(_filePath, FileMode.Create, FileAccess.Write))
@@ -88,19 +78,5 @@ namespace Quiz.Repository
             }
         }
 
-  
-        private T LoadFromFile<T>(string filePath)
-        {
-            if (File.Exists(filePath))
-            {
-                using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-                using (var reader = new StreamReader(fileStream, Encoding.UTF8))
-                {
-                    var jsonData = reader.ReadToEnd();
-                    return JsonSerializer.Deserialize<T>(jsonData);
-                }
-            }
-            return default; 
-        }
     }
 }

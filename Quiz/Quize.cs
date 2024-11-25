@@ -5,16 +5,18 @@ namespace Quiz.Models
 {
     public class Quize 
     {
-        public int QuizId { get; set; } 
-        public string Name { get; set; }
-        public int UserId { get; set; }  // UserId of the AuthUser creating the quiz
+     
+            public int QuizId { get; set; }
+            public string Name { get; set; }
+            public int UserId { get; set; }
 
-        public List<Question> Questions { get; set; }  
+            public List<int> QuestionIds { get; set; }
 
-        public Quize()
-        {
-            Questions = new List<Question>();  
-        }
+            public Quize()
+            {
+                QuestionIds = new List<int>();
+            }
+        
     }
    
 }
