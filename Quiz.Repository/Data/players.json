@@ -1,22 +1,29 @@
 [
   {
-    "Name": "fff",
-    "BestScore": 140,
-    "QuizzesCreated": [],
-    "UserId": 8,
-    "Username": null,
-    "PasswordHash": null,
-    "ActiveNow": false,
-    "LastLogin": "0001-01-01T00:00:00"
-  },
-  {
-    "Name": "kk",
-    "BestScore": 0,
+    "Username": "kk",
+    "BestScore": 260,
     "QuizzesCreated": [],
     "UserId": 7,
-    "Username": null,
     "PasswordHash": null,
-    "ActiveNow": false,
-    "LastLogin": "0001-01-01T00:00:00"
+    "ActiveNow": null,
+    "LastLogin": "2024-11-28T22:12:36.7939459+04:00"
+  },
+  {
+    "Username": "gg",
+    "BestScore": 0,
+    "QuizzesCreated": [],
+    "UserId": 13,
+    "PasswordHash": null,
+    "ActiveNow": null,
+    "LastLogin": "2024-11-28T22:13:52.3870019+04:00"
+  },
+  {
+    "Username": "rr",
+    "BestScore": 0,
+    "QuizzesCreated": [],
+    "UserId": 15,
+    "PasswordHash": null,
+    "ActiveNow": null,
+    "LastLogin": "2024-11-28T22:17:59.6592337+04:00"
   }
 ]

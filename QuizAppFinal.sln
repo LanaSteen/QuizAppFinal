@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuizApp", "QuizApp\QuizApp.csproj", "{A4CECB7D-64C3-4FD1-9C27-D0F12237EA15}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuizApp", "QuizApp\QuizApp.csproj", "{A4CECB7D-64C3-4FD1-9C27-D0F12237EA15}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quiz.Models", "Quiz\Quiz.Models.csproj", "{9EFEF770-300A-47CD-8005-4D2CE13073EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Quiz.Models", "Quiz\Quiz.Models.csproj", "{9EFEF770-300A-47CD-8005-4D2CE13073EA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Quiz", "Quiz", "{4445A627-F2CB-4FEC-93E0-1A232DF6DB1F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quiz.Repository", "Quiz.Repository\Quiz.Repository.csproj", "{3C87B6CD-64ED-42D3-BB47-20A629F95D3F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Quiz.Repository", "Quiz.Repository\Quiz.Repository.csproj", "{3C87B6CD-64ED-42D3-BB47-20A629F95D3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{A17863F4-2BC1-4A8F-97A6-B31DB6FD0BD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +31,10 @@ Global
 		{3C87B6CD-64ED-42D3-BB47-20A629F95D3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C87B6CD-64ED-42D3-BB47-20A629F95D3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C87B6CD-64ED-42D3-BB47-20A629F95D3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A17863F4-2BC1-4A8F-97A6-B31DB6FD0BD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A17863F4-2BC1-4A8F-97A6-B31DB6FD0BD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A17863F4-2BC1-4A8F-97A6-B31DB6FD0BD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A17863F4-2BC1-4A8F-97A6-B31DB6FD0BD6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -36,6 +42,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{9EFEF770-300A-47CD-8005-4D2CE13073EA} = {4445A627-F2CB-4FEC-93E0-1A232DF6DB1F}
 		{3C87B6CD-64ED-42D3-BB47-20A629F95D3F} = {4445A627-F2CB-4FEC-93E0-1A232DF6DB1F}
+		{A17863F4-2BC1-4A8F-97A6-B31DB6FD0BD6} = {4445A627-F2CB-4FEC-93E0-1A232DF6DB1F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7B9602BE-EAD3-421B-9077-806AEDE77187}
