@@ -45,22 +45,21 @@ namespace Quiz.Repository
 
             if (existingPlayer != null)
             {
-                // Update the existing player with the new values
                 existingPlayer.Username = player.Username;
                 existingPlayer.BestScore = player.BestScore;
-                existingPlayer.QuizzesCreated = player.QuizzesCreated ?? new List<Quize>();  // Ensure QuizzesCreated is initialized
+                existingPlayer.QuizzesCreated = player.QuizzesCreated ?? new List<Quize>();  
                 existingPlayer.ActiveNow = player.ActiveNow;
                 existingPlayer.LastLogin = player.LastLogin;
             }
             else
             {
-                // Add the new player
+               
                 players.Add(new Player
                 {
                     UserId = player.UserId,
                     Username = player.Username,
                     BestScore = player.BestScore,
-                    QuizzesCreated = player.QuizzesCreated ?? new List<Quize>(),  // Ensure QuizzesCreated is initialized
+                    QuizzesCreated = player.QuizzesCreated ?? new List<Quize>(),  
                     ActiveNow = player.ActiveNow,
                     LastLogin = player.LastLogin
                 });
@@ -68,25 +67,6 @@ namespace Quiz.Repository
 
             SavePlayers(players);
         }
-        //public void AddOrUpdatePlayer(Player player)
-        //{
-        //    var players = LoadPlayers();
-        //    var existingPlayer = players.Find(p => p.UserId == player.UserId);
-        //    if (existingPlayer != null)
-        //    {
-        //        existingPlayer.Username = player.Username;
-        //        existingPlayer.BestScore = player.BestScore;
-        //        existingPlayer.QuizzesCreated = player.QuizzesCreated;
-        //        existingPlayer.UserId = player.UserId;
-        //        existingPlayer.ActiveNow = player.ActiveNow;
-        //        existingPlayer.LastLogin = player.LastLogin;
-        //    }
-        //    else
-        //    {
-        //        players.Add(player);
-        //    }
-
-        //    SavePlayers(players);
-        //}
+     
     }
 }

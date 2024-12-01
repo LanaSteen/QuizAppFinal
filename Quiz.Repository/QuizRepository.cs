@@ -104,8 +104,8 @@ namespace Quiz.Repository
 
             if (quiz != null)
             {
-                quiz.QuestionIds.Add(questionId);  // Add the QuestionId to the Quiz's list of QuestionIds
-                SaveQuiz(quiz);  // Save the updated quiz
+                quiz.QuestionIds.Add(questionId);  
+                SaveQuiz(quiz); 
             }
         }
     }
